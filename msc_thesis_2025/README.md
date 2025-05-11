@@ -1,11 +1,11 @@
-# 📚 **Missing Data Imputation for DHS Indicators**
+# **Missing Data Imputation for DHS Indicators**
 _Exploring Deep Learning and Traditional Approaches for Data Recovery_
 
 Welcome! This repository contains my Master's research project on **missing data imputation** techniques specifically for **Demographic and Health Surveys (DHS)** datasets. The research compares traditional statistical methods and cutting-edge deep learning models, utilizing both real-world and synthetic data to assess performance.
 
 ---
 
-## 📍 **Project Overview**
+## **Project Overview**
 
 This project:
 
@@ -16,7 +16,7 @@ This project:
 
 ---
 
-## 📂 **Repository Structure**
+## **Repository Structure**
 When cloning this repository, create a dedicated local directory (e.g., final_imputation_project/) to keep things organized. The structure inside your project will look like this:
 
 ```bash
