@@ -1,0 +1,24 @@
+{
+    "input_dir": "/home/myuser/data/preprocessed_data/DHS_n_more/",
+    "dataset_type": "HR",
+    "group_by_col": "adm2_gaul",
+    "urban_rural_all_mode": "all",
+    "drop_agriculture": false,
+    "scale_numerical_data": true,
+    "drop_countries": true,
+    "egypt_dropping": true,
+    "drop_columns": [
+        "Meta; adm0_gaul",
+        "Meta; GEID_init"
+    ],
+    "countries_to_drop": [
+        "Egypt",
+        "Comoros",
+        "Central African Republic"
+    ],
+    "missingness_fraction": 0.3,
+    "use_synthetic_data": false,
+    "correlation_type": "no_correlation",
+    "dim": 96,
+    "N": 15000
+}
