@@ -47,12 +47,6 @@ def compute_data(final_imputations_dir_missing_ratio, missing_ratio, fold, repea
     
     # if the files do not exist, compute the necessary data
     print('Necessary files do not exist; they will be computed now from A to Z.')
-
-    # ensure user selection is string, not a dict
-    # selected_option = config.get('process_nans')
-    # if isinstance(selected_option, dict):
-    #     selected_option = selected_option.get('process_nans')
-
     selected_option = config['process_nans']
     assert isinstance(selected_option, str), "Expected 'process_nans' to be a string"
 
@@ -270,11 +264,6 @@ def compute_data_for_feature_evaluation(final_imputations_dir_features, feature_
         # if the necessary files do not exist, compute the required data
         print('Necessary files do not exist; they will be computed now from A to Z.')
 
-        # ensure user selection is string, not a dict
-        # selected_option = config.get('process_nans')
-        # if isinstance(selected_option, dict):
-        #     selected_option = selected_option.get('process_nans')
-
         selected_option = config['process_nans']
         assert isinstance(selected_option, str), "Expected 'process_nans' to be a string"
     
@@ -368,12 +357,6 @@ def load_or_compute_data_feature_evaluation(input_df, imputers, feature_interval
     """
     Load or compute data based on the number of features and perform imputation.
     """
-    # ensuring 'process_nans' is set (prompt if missing)
-    # if not config.get('use_synthetic_data', False):
-    #     if 'process_nans' not in config:
-    #         config['process_nans'] = select_process_nans_option()
-    #         print(f" You selected process_nans: {config['process_nans']}")
-
     if not config.get('use_synthetic_data', False):
         if 'process_nans' not in config or not isinstance(config['process_nans'], str):
             config = select_process_nans_option(config)
