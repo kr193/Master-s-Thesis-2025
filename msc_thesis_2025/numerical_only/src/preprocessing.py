@@ -72,17 +72,6 @@ def prepare_data(X_train, X_val, X_test, config):
         X_train_scaled, X_val_scaled, X_test_scaled = X_train, X_val, X_test
 
     return X_train_scaled, X_val_scaled, X_test_scaled
-    
-    # # applying normalization to numerical columns for improved training efficiency and model convergence
-    # if config['scale_numerical_data']:
-    #     scaler = StandardScaler()
-    #     X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns=X_train.columns)
-    #     X_val_scaled = pd.DataFrame(scaler.transform(X_val), columns=X_val.columns)
-    #     X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns=X_test.columns)
-    # else:
-    #     X_train_scaled, X_val_scaled, X_test_scaled = X_train, X_val, X_test
-    
-    # return X_train_scaled, X_val_scaled, X_test_scaled
 
 def prepare_data_for_feature_evaluation(X_train, X_val, X_test, config):
     """
