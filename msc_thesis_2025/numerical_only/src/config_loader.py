@@ -8,34 +8,34 @@
 # importing required libraries
 import os
 import json
+from pathlib import Path
 
-def load_config(config_file='config.json'):
+def find_project_root():
     """
-    Load configuration from a JSON file located in the project root (one level above src/).
+    moving up from this file's directory until it finds 'config.json'.
+    Raises FileNotFoundError if it hits the filesystem root without finding it.
     """
-    # getting the directory where this script (config_loader.py) is located
-    current_file_dir = os.path.dirname(os.path.abspath(__file__))
-    # going one level up to the project root
-    project_root = os.path.dirname(current_file_dir)
-    # constructing the full path to config.json
-    config_path = os.path.join(project_root, config_file)
-    # loading the JSON config
-    with open(config_path, 'r') as f:
-        config = json.load(f)
-    return config
+    current = Path(__file__).resolve().parent
 
-def getting_project_root():
-    """
-    Detect the project root where config.json exists.
-    """
-    current_dir = os.getcwd()
-    if os.path.exists(os.path.join(current_dir, 'config.json')):
-        return current_dir
-    else:
-        # fallback: moving up from src/ to root
-        current_file_dir = os.path.dirname(os.path.abspath(__file__))
-        return os.path.dirname(current_file_dir)
+    # climbing until finding config.json or reaching the filesystem root
+    while True:
+        if (current / 'config.json').exists():
+            return current
+        if current.parent == current:
+            # if reached the top and never saw config.json
+            raise FileNotFoundError(f"Could not find '{root_marker}' in any parent of {__file__}")
+        current = current.parent
 
+def load_config(config_file: str = 'config.json') -> dict:
+    """
+    Load configuration from a JSON file located somewhere in the project root tree.
+    Uses find_project_root() to locate the directory containing `config` file.
+    """
+    project_root = find_project_root(config_file)
+    config_path = project_root / config_file
+    with config_path.open('r') as f:
+        return json.load(f)
+        
 # fetching or re-checking paths for task-specific use
 def get_final_imputations_dir(config):
     """
@@ -47,7 +47,7 @@ def get_final_imputations_dir(config):
         task2_dir (str): Directory for Task 2 results.
         task3_dir (str): Directory for Task 3 results.
     """
-    project_root = getting_project_root()
+    project_root = find_project_root()
 
     if config.get('use_synthetic_data'):
         base_dir = os.path.join(project_root, 'results', 'synthetic_data', f"synthetic_{config['correlation_type']}")
