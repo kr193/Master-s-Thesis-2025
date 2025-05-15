@@ -1,5 +1,5 @@
 {
-    "input_dir": "/home/myuser/data/preprocessed_data/DHS_n_more/",
+    "input_dir": "data",
     "dataset_type": "HR",
     "group_by_col": "adm2_gaul",
     "urban_rural_all_mode": "all",
