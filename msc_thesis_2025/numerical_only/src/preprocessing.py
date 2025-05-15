@@ -54,15 +54,16 @@ def prepare_data(X_train, X_val, X_test, config):
     # only drop columns if 'process_nans' == 'drop_all_nans'
     # the raw fetched DHS dataset has categorical columns also like "Meta; adm0_gaul", "Meta; GEID_init"
     # if user selects this 'drop_all_nans' option, to ensure the dataset to be full numerical dataset, the mentioned    cat. columns are dropped using the 'drop_columns' config.
-    process_nans = config.get('process_nans', '') 
+    process_nans = config.get('process_nans', '')
     
-    # for 'drop_all_nans' specifically, drop predefined columns if listed
+    # drop columns only if 'drop_all_nans' is selected
     if process_nans == 'drop_all_nans' and 'drop_columns' in config:
-        X_train = X_train.drop(columns=config['drop_columns'], errors='ignore')
-        X_val = X_val.drop(columns=config['drop_columns'], errors='ignore')
-        X_test = X_test.drop(columns=config['drop_columns'], errors='ignore')
+        drop_cols = config['drop_columns']
+        X_train = X_train.drop(columns=drop_cols, errors='ignore')
+        X_val = X_val.drop(columns=drop_cols, errors='ignore')
+        X_test = X_test.drop(columns=drop_cols, errors='ignore')
 
-    # apply scaling
+    # applying scaling
     if config.get('scale_numerical_data', True):
         scaler = StandardScaler()
         X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns=X_train.columns)
