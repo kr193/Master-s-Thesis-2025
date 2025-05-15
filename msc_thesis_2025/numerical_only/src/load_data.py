@@ -6,26 +6,10 @@ import os
 import pandas as pd
 from pathlib import Path
 from src.utils import drop_all_nans
-from src.config_loader import load_config
 from src.utils import calculate_initial_missingness
+from src.config_loader import load_config, find_project_root
 from src.synthetic_data_generation import generate_synthetic_data
 from src.dhs_modelling_functions_new import final_ds_droping_cols
-
-def find_project_root():
-    """
-    moving up from this file's directory until it finds 'config.json'.
-    Raises FileNotFoundError if it hits the filesystem root without finding it.
-    """
-    current = Path(__file__).resolve().parent
-
-    # climbing until finding config.json or reaching the filesystem root
-    while True:
-        if (current / 'config.json').exists():
-            return current
-        if current.parent == current:
-            # if reached the top and never saw config.json
-            raise FileNotFoundError(f"Could not find '{root_marker}' in any parent of {__file__}")
-        current = current.parent
 
 def load_data(config):
     """
@@ -36,8 +20,11 @@ def load_data(config):
     """
 
     # input_dir to an absolute Path
-    input_dir = Path(config.get('input_dir', 'data')).expanduser().resolve()
-    config['input_dir'] = str(input_dir)
+    project_root = find_project_root()
+    data_dir = project_root / 'data'
+
+    # storing in config for consistency
+    config['input_dir'] = str(data_dir)
     
     # case 1: Synthetic data
     if config.get('use_synthetic_data', False):
@@ -56,32 +43,26 @@ def load_data(config):
 
     selected_option = config['process_nans']
     print(f" process_nans selected by user: {selected_option}")
-
+    print("Loading real DHS dataset...")
+    
     # to load real data from pickle file based on file names to look for in the expected folder
     print("Loading real DHS dataset...")
     dataset_type = config.get('dataset_type', 'HR')
     group_by_col = config.get('group_by_col', 'adm2_gaul')
     urban_rural_all_mode = config.get('urban_rural_all_mode', 'all')
 
-    expected_pickle = f"5_grouped_df_V3_{dataset_type}_{group_by_col}_joined_with_ipc_{urban_rural_all_mode}.pkl"
-    fallback_csv = "5_grouped_df_V3_HR_adm2_gaul_joined_with_ipc_all.csv"
+    expected_pickle = data_dir / f"5_grouped_df_V3_{dataset_type}_{group_by_col}_joined_with_ipc_{urban_rural_all_mode}.pkl"
+    expected_csv = data_dir / f"5_grouped_df_V3_{dataset_type}_{group_by_col}_joined_with_ipc_{urban_rural_all_mode}.csv"
 
     # trying to load from the given input directory if provided
-    df = None
-    pk = input_dir / expected_pickle
-    if pk.exists():
-        print(f"Found dataset at: {pk}")
-        df = pd.read_pickle(pk)
-
-    # fallback to <project_root>/data/
-    if df is None:
-        project_root = find_project_root()
-        fb = project_root / 'data' / fallback_csv
-        if fb.exists():
-            print(f"Fallback: loading dataset from {fb}")
-            df = pd.read_csv(fb)
-        else:
-            raise FileNotFoundError(f"No dataset found at either {pk} or {fb}")
+    if expected_pickle.exists():
+        print(f"Loading dataset from: {expected_pickle}")
+        df = pd.read_pickle(expected_pickle)
+    elif expected_csv.exists():
+        print(f"Loading fallback CSV from: {expected_csv}")
+        df = pd.read_csv(expected_csv)
+    else:
+        raise FileNotFoundError(f"No dataset found in: {data_dir}\nExpected either:\n- {expected_pickle.name}\n- {expected_csv.name}")
 
     # preprocessing
     # applying dataset preprocessing: dropping meta columns, food help cols that are not necessary
