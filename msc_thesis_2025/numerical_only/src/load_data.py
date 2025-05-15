@@ -4,6 +4,7 @@
 # importing required libraries
 import os
 import pandas as pd
+from pathlib import Path
 from src.utils import drop_all_nans
 from src.config_loader import load_config
 from src.utils import calculate_initial_missingness
@@ -12,26 +13,34 @@ from src.dhs_modelling_functions_new import final_ds_droping_cols
 
 def find_project_root():
     """
-    Detect the project root where config.json exists.
-    useful for fallback file loading when input_dir is not provided.
+    moving up from this file's directory until it finds 'config.json'.
+    Raises FileNotFoundError if it hits the filesystem root without finding it.
     """
-    current_dir = os.getcwd()
-    if os.path.exists(os.path.join(current_dir, 'config.json')):
-        return current_dir
-    else:
-        # assuming this file is in src/, go up one level
-        current_file_dir = os.path.dirname(os.path.abspath(__file__))
-        return os.path.dirname(current_file_dir)
+    current = Path(__file__).resolve().parent
+
+    # climbing until finding config.json or reaching the filesystem root
+    while True:
+        if (current / 'config.json').exists():
+            return current
+        if current.parent == current:
+            # if reached the top and never saw config.json
+            raise FileNotFoundError(f"Could not find '{root_marker}' in any parent of {__file__}")
+        current = current.parent
 
 def load_data(config):
     """
     Main data loading function that handles both real and synthetic datasets.
     - For synthetic: generates artificial data like original DHS numerical data based on correlation type selected by user.
     - For real data: loads pickled or CSV file based on configuration.
-    applies standard preprocessing and optionally drops highly missing rows/surveys.
+    Applies standard preprocessing and optionally drops highly missing rows/surveys.
     """
+
+    # input_dir to an absolute Path
+    input_dir = Path(config.get('input_dir', 'data')).expanduser().resolve()
+    config['input_dir'] = str(input_dir)
+    
+    # case 1: Synthetic data
     if config.get('use_synthetic_data', False):
-        # for synthetic data: No 'process_nans' check needed
         print(f" Synthetic data selected with correlation type: {config['correlation_type']}")
         synthetic_data = generate_synthetic_data(
             config['correlation_type'], 
@@ -40,13 +49,16 @@ def load_data(config):
         )
         return synthetic_data, calculate_initial_missingness(synthetic_data)
 
+    # case 2: Real data - validate 'process_nans' from prompt
     # for real data: ensuring 'process_nans' is set
-    if 'process_nans' not in config or not config['process_nans']:
-        raise ValueError(" process_nans is missing in the configuration! Please ensure it's set before calling load_data().")
-    print(f" process_nans in load_data(): {config['process_nans']}")
+    if 'process_nans' not in config or not isinstance(config['process_nans'], str):
+        raise ValueError("'process_nans' is missing or invalid in the config. Please ensure it's selected by the user.")
 
-    # attempting to load real data from pickle file based on file names to look for in the expected folder
-    print(" Loading real data...")
+    selected_option = config['process_nans']
+    print(f" process_nans selected by user: {selected_option}")
+
+    # to load real data from pickle file based on file names to look for in the expected folder
+    print("Loading real DHS dataset...")
     dataset_type = config.get('dataset_type', 'HR')
     group_by_col = config.get('group_by_col', 'adm2_gaul')
     urban_rural_all_mode = config.get('urban_rural_all_mode', 'all')
@@ -55,60 +67,60 @@ def load_data(config):
     fallback_csv = "5_grouped_df_V3_HR_adm2_gaul_joined_with_ipc_all.csv"
 
     # trying to load from the given input directory if provided
-    data_found = False
-    if config.get('input_dir'):
-        pickle_path = os.path.join(config['input_dir'], expected_pickle)
-        if os.path.exists(pickle_path):
-            print(f" Found dataset at: {pickle_path}")
-            df = pd.read_pickle(pickle_path)
-            data_found = True
-        else:
-            print(f"Dataset not found at: {pickle_path}")
+    df = None
+    pk = input_dir / expected_pickle
+    if pk.exists():
+        print(f"Found dataset at: {pk}")
+        df = pd.read_pickle(pk)
 
-    # if not found, fallback to a default location in /data/
-    if not data_found:
+    # fallback to <project_root>/data/
+    if df is None:
         project_root = find_project_root()
-        fallback_path = os.path.join(project_root, 'data', fallback_csv)
-        if os.path.exists(fallback_path):
-            print(f" Fallback: loading dataset from {fallback_path}")
-            df = pd.read_csv(fallback_path)
+        fb = project_root / 'data' / fallback_csv
+        if fb.exists():
+            print(f"Fallback: loading dataset from {fb}")
+            df = pd.read_csv(fb)
         else:
-            raise FileNotFoundError(f"Dataset not found in fallback location: {fallback_path}")
+            raise FileNotFoundError(f"No dataset found at either {pk} or {fb}")
 
+    # preprocessing
     # applying dataset preprocessing: dropping meta columns, food help cols that are not necessary
-    df = final_ds_droping_cols(df, 
-                               drop_meta=True, drop_food_help=True, drop_perc=40,
-                               retain_month=False, drop_highly_correlated_cols=False, drop_region=True, 
-                               drop_data_sets=['Meta one-hot encoding', 'Meta frequency encoding'], 
-                               use_NAN_amount_and_replace_NANs_in_categorical=False, 
-                               drop_agricultural_cols=config['drop_agriculture'], 
-                               drop_below_version=False, numerical_data=['mean'], retain_adm=False, 
-                               retain_GEID_init=False, verbose=3)
-    
+    df = final_ds_droping_cols(
+        df,
+        drop_meta=True, drop_food_help=True, drop_perc=40,
+        retain_month=False, drop_highly_correlated_cols=False, drop_region=True,
+        drop_data_sets=['Meta one-hot encoding', 'Meta frequency encoding'],
+        use_NAN_amount_and_replace_NANs_in_categorical=False,
+        drop_agricultural_cols=config.get('drop_agriculture', False),
+        drop_below_version=False, numerical_data=['mean'], retain_adm=False,
+        retain_GEID_init=False, verbose=3
+    )
+
     # again data cleaning by dropping specific FS and translation columns that are not needed
     drop_cols = [c for c in df.columns if 'FS;' in c and '0-2y' not in c]
     df.drop(columns=drop_cols, inplace=True, errors='ignore')
     df.drop(columns=['DHS Cat; translator used: not at all', 'DHS Cat; translator used: yes'], inplace=True, errors='ignore')
 
-    # dropping selected countries like "Egypt", "Comoros", "Central African Republic" as these lower overall data quality for its missingness
-    if config['egypt_dropping']:
-        df = df[~df['Meta; adm0_gaul'].isin(config['countries_to_drop'])]
+    # dropping selected countries like "Egypt", "Comoros", "Central African Republic" as these reduce the overall data quality for its missingness
+    if config.get('egypt_dropping', False):
+        df = df[~df['Meta; adm0_gaul'].isin(config.get('countries_to_drop', []))]
 
-    # if user selects 'drop_all_nans' from prompt, it will handle NaN values by dropping all NaNs 
-    if config['process_nans'] == 'drop_all_nans':
+    # handling missingness based on user selection
+    # if user selects 'drop_all_nans' from prompt, it will handle NaN values by dropping all NaNs in the dataset
+    if selected_option == 'drop_all_nans':
         df = drop_all_nans(df)
-
-    elif config['process_nans'] == 'numerical_only':
-        # if 'numerical_only', just drop Egypt and return without further processing
-        return df, initial_missingness
         
+    # elif config['process_nans'] == 'numerical_only':
+    elif selected_option == 'keep_all_numerical':
+        # if 'keep_all_numerical', just dropping Egypt and returning without further processing
+        return df, calculate_initial_missingness(df)
+
     # if user selects 'numerical_only_drop_20_percentage_nans' from prompt, it will handle NaN values by dropping 20% of NaNs only 
-    elif config['process_nans'] == 'numerical_only_drop_20_percentage_nans':
+    elif selected_option == 'numerical_only_drop_20_percentage_nans':
         if 'Meta; GEID_init' in df.columns:
             survey_missingness = df.groupby('Meta; GEID_init').apply(lambda x: x.isna().mean().mean())
             surveys_to_keep = survey_missingness[survey_missingness <= 0.2].index
             df = df[df['Meta; GEID_init'].isin(surveys_to_keep)]
-            
-    # returning the final cleaned dataset and its initial missingness stats
-    return df, calculate_initial_missingness(df)
 
+    # returning cleaned dataset and initial missingness stats
+    return df, calculate_initial_missingness(df)
