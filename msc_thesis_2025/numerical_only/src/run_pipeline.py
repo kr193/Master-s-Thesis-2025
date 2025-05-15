@@ -49,9 +49,12 @@ def compute_data(final_imputations_dir_missing_ratio, missing_ratio, fold, repea
     print('Necessary files do not exist; they will be computed now from A to Z.')
 
     # ensure user selection is string, not a dict
-    selected_option = config.get('process_nans')
-    if isinstance(selected_option, dict):
-        selected_option = selected_option.get('process_nans')
+    # selected_option = config.get('process_nans')
+    # if isinstance(selected_option, dict):
+    #     selected_option = selected_option.get('process_nans')
+
+    selected_option = config['process_nans']
+    assert isinstance(selected_option, str), "Expected 'process_nans' to be a string"
 
     if not config.get('use_synthetic_data', False):
         if selected_option in ['numerical_only_drop_20_percentage_nans', 'keep_all_numerical']:
@@ -268,9 +271,12 @@ def compute_data_for_feature_evaluation(final_imputations_dir_features, feature_
         print('Necessary files do not exist; they will be computed now from A to Z.')
 
         # ensure user selection is string, not a dict
-        selected_option = config.get('process_nans')
-        if isinstance(selected_option, dict):
-            selected_option = selected_option.get('process_nans')
+        # selected_option = config.get('process_nans')
+        # if isinstance(selected_option, dict):
+        #     selected_option = selected_option.get('process_nans')
+
+        selected_option = config['process_nans']
+        assert isinstance(selected_option, str), "Expected 'process_nans' to be a string"
     
         if not config.get('use_synthetic_data', False):
             if selected_option in ['numerical_only_drop_20_percentage_nans', 'keep_all_numerical']:
