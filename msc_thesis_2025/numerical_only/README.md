@@ -1,4 +1,4 @@
-# **Sub-Project Structure: Only Numerical Datasets: Addressing Data Gaps in Tabular Datasets**
+# **Only Numerical Datasets: Addressing Data Gaps in Numerical Tabular Datasets**
 *Exploring Deep Learning and Traditional Approaches for Addressing Data Gaps in Numerical Data Only*
 
 This folder contains code for evaluating imputation techniques on datasets containing only **numerical features** which are aggregated data, extensively preprocessed from DHS program under varying missing data ratios.
