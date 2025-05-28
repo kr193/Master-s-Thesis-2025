@@ -42,8 +42,8 @@ def evaluate_metrics_part(input_df, imputers, missing_ratios, config):
         ]
     else:
         print("Using real data: Applying fold_generator_3_independent_indices")
-        # fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='survey', n_splits=5))
-        fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='unconditional', n_splits=5))
+        fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='survey', n_splits=5))
+        # fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='unconditional', n_splits=5))
 
     # ensuring output_file_prefix exists
     output_file_prefix = config.get('output_file_prefix')
@@ -246,8 +246,8 @@ def evaluate_metrics_part_feature_evaluation(input_df, imputers, feature_interva
         ]
     else:
         print("Using real data: Applying fold_generator_3_independent_indices")
-        # fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='survey', n_splits=5))
-        fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='unconditional', n_splits=5))
+        fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='survey', n_splits=5))
+        # fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='unconditional', n_splits=5))
     
     # generating 5-fold cross-validation splits
     
