@@ -85,6 +85,67 @@ def save_metrics_to_excel(final_results, imputers, missing_ratios, config):
     except Exception as e:
         print(f"Error saving Excel files: {e}")
 
+def plot_std_boxplot_for_ratio_30(results, imputers, config, missing_ratio=0.3):
+    """
+    Plot RMSE Std Boxplot across imputers for only 30% missing ratio,
+    with median lines in dark green color.
+    """
+    output_file_prefix = config['output_file_prefix']
+    output_images_dir = config['output_images_dir']
+
+    # collects only the std RMSE at missing ratio 30 for each imputer
+    all_std_rmse_data = {}
+    for imputer in imputers:
+        rmse_data = results.get(imputer, {}).get(missing_ratio, {}).get('rmse', {})
+        std_val = rmse_data.get('std')
+        if std_val is not None:
+            all_std_rmse_data[imputer] = [std_val]  # Make it a list for boxplot compatibility
+
+    #boxplot
+    plt.figure(figsize=(10, 8))
+
+    matte_colors = [
+        '#FFCC80', '#A3C1AD', '#B39DDB', '#F5A9BC',
+        '#9FA8DA', '#FFE5CC', '#C5E1A5', '#90A4AE'
+    ]
+
+    boxplot_data_std = [all_std_rmse_data[imp] for imp in imputers if imp in all_std_rmse_data]
+    box_std = plt.boxplot(
+        boxplot_data_std,
+        patch_artist=True,
+        showmeans=True,
+        meanline=True,
+        meanprops=dict(linestyle='-', linewidth=2, color='#8B0000'),
+        labels=[imp for imp in imputers if imp in all_std_rmse_data]
+    )
+
+    # applying colors to boxes
+    for patch, color in zip(box_std['boxes'], matte_colors):
+        patch.set_facecolor(color)
+
+    # sets median line color to dark green
+    for median in box_std['medians']:
+        median.set(color='darkgreen', linewidth=2)
+
+    # title and axis labels
+    plt.title('RMSE Std Boxplot Across Imputers at 30% Missing Ratio')
+    plt.xlabel('Imputers')
+    plt.ylabel('RMSE Std Dev at 30%')
+    plt.grid(True)
+
+    # saving the figure
+    if config.get('use_synthetic_data', False):
+        prefix = f"synthetic_{config['correlation_type']}"
+    else:
+        prefix = config['process_nans']
+
+    filename = os.path.join(output_images_dir, f"{prefix}_{output_file_prefix}_rmse_std_boxplot_30_only.png")
+    plt.tight_layout()
+    plt.savefig(filename, bbox_inches='tight')
+    plt.show()
+
+    print(f"RMSE Std Boxplot (30%) saved to {filename}")
+
 # Task 1: RMSE vs Missing Ratio plotting
 def missing_ratio_vs_stats(results, imputers, missing_ratios, config):
     """
@@ -339,6 +400,7 @@ def combined_df_scatter_plots(extracted_values, config, missing_ratio=0.3):
     plt.show()
 
     print(f'Scatter plot saved to {scatter_plot_filename}')
+
 
 # helper function to sanitize file names
 def sanitize_filename(filename):
