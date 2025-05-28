@@ -1,4 +1,4 @@
-# **Sub-Project Structure: Numerical with Categorical Datasets: Addressing Data Gaps in Mixed-Type Tabular Datasets**
+# **Numerical with Categorical Datasets: Addressing Data Gaps in Mixed-Type Tabular Datasets**
 
 *Exploring Deep Learning and Traditional Approaches for Addressing Missing Data in Numerical + Categorical Dataset*
 
