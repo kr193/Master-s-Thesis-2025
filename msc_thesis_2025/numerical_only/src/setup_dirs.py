@@ -3,11 +3,11 @@
 
 # importing required libraries
 import os
-from src.config_loader import load_config, getting_project_root
+from src.config_loader import load_config, find_project_root
 
 # setting up at the beginning of the project (global config setup)
 def setup_directories(config):
-    project_root = getting_project_root()
+    project_root = find_project_root()
 
     # consistent base directory for synthetic data
     if config.get('use_synthetic_data'):
@@ -30,7 +30,7 @@ def setup_directories(config):
     # creating directories
     for path in [task1_dir, task2_dir, task3_dir, output_images_dir]:
         os.makedirs(path, exist_ok=True)
-        print(f"📂 Created or verified directory: {path}")
+        print(f" Created or verified directory: {path}")
 
     # storing paths in config for easy access
     config['task1_dir'] = task1_dir
