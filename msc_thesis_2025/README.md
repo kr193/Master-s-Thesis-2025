@@ -4,8 +4,6 @@ _Exploring Deep Learning and Traditional Approaches for Addressing Data Gaps in 
 
 ---
 
-_Combining 'Numerical Only' and 'Numerical with Categorical' Data Pipelines_
-
 Welcome to the **main repository** for my **Master's Thesis Project** on **Data Gaps** using both **numerical-only** and **numerical with categorical** datasets. This project compares traditional and deep learning-based imputation techniques by leveraging real-world **Demographic and Health Surveys (DHS)** tabular datasets and synthetic tabular datasets.
 
 ---
@@ -26,6 +24,7 @@ Each pipeline is independent with its own:
 ---
 
 ## **Project Structure**
+_Combining 'Numerical Only' and 'Numerical with Categorical' Data Pipelines_
 
 ```text
 msc_thesis_2025/
@@ -103,7 +102,11 @@ Each README provides detailed explanations specific to that pipeline, including 
 
 If using this code for your research, please cite the associated publication.
 
+---
+
 ## **Acknowledgments**
 
 Thank you for exploring this project. Any feedback and collaboration are always welcome.
+
+---
 
