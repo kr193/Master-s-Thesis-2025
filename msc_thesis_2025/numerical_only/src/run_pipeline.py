@@ -169,8 +169,8 @@ def load_or_compute_data_part(input_df, imputers, missing_ratios, config, maskin
     else:
         # for real data, using custom fold generator
         print("Using real data: Applying fold_generator_3_independent_indices")
-        # fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='survey', n_splits=5))
-        fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='unconditional', n_splits=5))
+        fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='survey', n_splits=5))
+        # fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='unconditional', n_splits=5))
 
     # iterating over all folds and missing ratios to compute or load data
     for fold, (train_index, val_index, test_index) in enumerate(fold_gen):
@@ -382,8 +382,8 @@ def load_or_compute_data_feature_evaluation(input_df, imputers, feature_interval
         ]
     else:
         print("Using real data: Applying fold_generator_3_independent_indices")
-        # fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='survey', n_splits=5))
-        fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='unconditional', n_splits=5))
+        fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='survey', n_splits=5))
+        # fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='unconditional', n_splits=5))
 
     # iterates over all folds and feature intervals to compute or load data
     for fold, (train_index, val_index, test_index) in enumerate(fold_gen):
