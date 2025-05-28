@@ -50,18 +50,14 @@ def load_data(config):
     group_by_col = config.get('group_by_col', 'adm2_gaul')
     urban_rural_all_mode = config.get('urban_rural_all_mode', 'all')
 
-    expected_pickle = data_dir / f"5_grouped_df_V3_{dataset_type}_{group_by_col}_joined_with_ipc_{urban_rural_all_mode}.pkl"
-    expected_csv = data_dir / f"5_grouped_df_V3_{dataset_type}_{group_by_col}_joined_with_ipc_{urban_rural_all_mode}.csv"
+    # trying to load from the given input directory
+    expected_gz = data_dir / f"5_grouped_df_V3_{dataset_type}_{group_by_col}_joined_with_ipc_{urban_rural_all_mode}.pkl.gz"
 
-    # trying to load from the given input directory if provided
-    if expected_pickle.exists():
-        print(f"Loading dataset from: {expected_pickle}")
-        df = pd.read_pickle(expected_pickle)
-    elif expected_csv.exists():
-        print(f"Loading fallback CSV from: {expected_csv}")
-        df = pd.read_csv(expected_csv)
+    if expected_gz.exists():
+        print(f"Loading compressed pickle dataset from: {expected_gz}")
+        df = pd.read_pickle(expected_gz, compression='gzip')
     else:
-        raise FileNotFoundError(f"No dataset found in: {data_dir}\nExpected either:\n- {expected_pickle.name}\n- {expected_csv.name}")
+        raise FileNotFoundError(f"Compressed dataset not found at: {expected_gz}")
 
     # preprocessing
     # applying dataset preprocessing: dropping meta columns, food help cols that are not necessary
