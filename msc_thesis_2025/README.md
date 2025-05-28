@@ -40,8 +40,7 @@ msc_thesis_2025/
 │   ├── main.py                     # Main script for mixed data experiments
 │   ├── src/                        # Source code for mixed data pipeline
 │   ├── results/                    # Pickle files for mixed data results
-│   └── output_images/              # Plots & reports for mixed data
-└── cross-validation/               # Hyperparameter tuning the architectures and other parameetrs for deep learning methods by implementing customized cross-validation
+└── cross-validation/               # Hyperparameter tuning the architectures and other parameters for deep learning methods by implementing customized cross-validation strategy.
 ```
 
 Each pipeline follows a similar structure for easy navigation and reproducibility.
@@ -91,22 +90,22 @@ Each README provides detailed explanations specific to that pipeline, including 
 
 ---
 
-## Collaboration & License
+## **Collaboration & License**
 
-- Email: rubaiyakabir11@gmail.com
-- License: MIT License
+* Email: [rubaiyakabir11@gmail.com](mailto:rubaiyakabir11@gmail.com)
+* License: MIT License
 
 ---
 
-## Citation
+## **Citation**
 
-If using this code for your research, please cite the associated publication.
+If using this code for research, please cite the corresponding publication.
 
 ---
 
 ## **Acknowledgments**
 
-Thank you for exploring this project. Any feedback and collaboration are always welcome.
+Thank you for exploring this sub-project. Feedback and collaboration are warmly welcomed.
 
 ---
 
