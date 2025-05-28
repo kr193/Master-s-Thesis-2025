@@ -42,7 +42,8 @@ def evaluate_metrics_part(input_df, imputers, missing_ratios, config):
         ]
     else:
         print("Using real data: Applying fold_generator_3_independent_indices")
-        fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='survey', n_splits=5))
+        # fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='survey', n_splits=5))
+        fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='unconditional', n_splits=5))
 
     # ensuring output_file_prefix exists
     output_file_prefix = config.get('output_file_prefix')
@@ -93,9 +94,11 @@ def evaluate_metrics_part(input_df, imputers, missing_ratios, config):
                         actual_values_extracted = pd.DataFrame(extract_values_using_mask(X_test_scaled_final, missing_mask))
                         imputed_df = pd.DataFrame(imputed_data)
                         imputed_df_extracted = pd.DataFrame(extract_values_using_mask(imputed_data, missing_mask))
+
                         print(f"Shape of actual_values_extracted: {actual_values_extracted.shape}")
                         print(f"Shape of imputed_df_extracted: {imputed_df_extracted.shape}")
-                        # storing the extracted values for scatter plotting
+                        
+                        # storing the extracted values for scatter plotting for one fold only
                         if missing_ratio not in extracted_values:
                             extracted_values[missing_ratio] = {}
                         if imputer_name not in extracted_values[missing_ratio]:
@@ -103,7 +106,16 @@ def evaluate_metrics_part(input_df, imputers, missing_ratios, config):
                                 'actual': actual_values_extracted,
                                 'imputed': imputed_df_extracted
                             }
-
+                            
+                        # if fold == 3:
+                        #     if missing_ratio not in extracted_values:
+                        #         extracted_values[missing_ratio] = {}
+                        #     if imputer_name not in extracted_values[missing_ratio]:
+                        #         extracted_values[missing_ratio][imputer_name] = {
+                        #             'actual': actual_values_extracted,
+                        #             'imputed': imputed_df_extracted
+                        #         }
+  
                         # RMSE and other metrics calculations
                         rmse_value = np.sqrt(mean_squared_error(actual_values_extracted, imputed_df_extracted))
                         rmse_store[imputer_name][missing_ratio].append(rmse_value)
@@ -234,10 +246,10 @@ def evaluate_metrics_part_feature_evaluation(input_df, imputers, feature_interva
         ]
     else:
         print("Using real data: Applying fold_generator_3_independent_indices")
-        fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='survey', n_splits=5))
+        # fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='survey', n_splits=5))
+        fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='unconditional', n_splits=5))
     
     # generating 5-fold cross-validation splits
-    # fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='survey', n_splits=5))
     
     # initializing dictionaries to store metrics results
     rmse_store = {imputer: {n_features: [] for n_features in feature_intervals} for imputer in imputers}
