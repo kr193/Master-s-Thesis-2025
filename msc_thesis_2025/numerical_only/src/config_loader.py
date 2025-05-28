@@ -10,20 +10,20 @@ import os
 import json
 from pathlib import Path
 
-def find_project_root():
+def find_project_root(root_marker: str = 'config.json') -> Path:
     """
     moving up from this file's directory until it finds 'config.json'.
     Raises FileNotFoundError if it hits the filesystem root without finding it.
     """
     current = Path(__file__).resolve().parent
 
-    # climbing until finding config.json or reaching the filesystem root
     while True:
-        if (current / 'config.json').exists():
+        if (current / root_marker).exists():
             return current
         if current.parent == current:
-            # if reached the top and never saw config.json
-            raise FileNotFoundError(f"Could not find '{root_marker}' in any parent of {__file__}")
+            raise FileNotFoundError(
+                f"Could not find '{root_marker}' in any parent of {__file__}"
+            )
         current = current.parent
 
 def load_config(config_file: str = 'config.json') -> dict:
