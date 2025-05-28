@@ -22,7 +22,7 @@ from src.helper_functions import select_process_nans_option, select_masking_opti
 
 # important columns
 important_columns = [
-    'DHS Cat; source of drinking water: piped into dwelling',
+    'DHS Cat; source of drinking water: piped into dwelling', 
     'DHS Num; cluster altitude in meters: mean',
     'DHS Num; number of mosquito bed nets: mean',
     'DHS Num; time to get to water source (minutes): mean',
