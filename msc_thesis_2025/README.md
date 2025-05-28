@@ -1,5 +1,5 @@
 
-# **A Comparative Analysis of Advanced Statistical and Machine Learning Methods for Addressing Data Gaps in Tabular Datasets - Main Repository**
+# **Thesis: A Comparative Analysis of Advanced Statistical and Machine Learning Methods for Addressing Data Gaps in Tabular Datasets**
 _Exploring Deep Learning and Traditional Approaches for Addressing Data Gaps in Tabular Datasets_
 
 ---
@@ -58,14 +58,14 @@ git clone https://github.com/kr193/Master-s-Thesis-2025.git
 ```
 
 ### Step 2: Choose your pipeline
-- For **numerical-only** experiments:
-  ```bash
-  cd numerical_only
-  ```
-- For **numerical with categorical** experiments:
-  ```bash
-  cd numerical_with_categorical
-  ```
+For **numerical-only** experiments:
+```bash
+cd numerical_only
+```
+For **numerical with categorical** experiments:
+```bash
+cd numerical_with_categorical
+```
 
 ### Step 3: Install dependencies
 ```bash
