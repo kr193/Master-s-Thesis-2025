@@ -47,6 +47,7 @@ def compute_data(final_imputations_dir_missing_ratio, missing_ratio, fold, repea
     
     # if the files do not exist, compute the necessary data
     print('Necessary files do not exist; they will be computed now from A to Z.')
+
     selected_option = config['process_nans']
     assert isinstance(selected_option, str), "Expected 'process_nans' to be a string"
 
@@ -97,7 +98,6 @@ def compute_data(final_imputations_dir_missing_ratio, missing_ratio, fold, repea
         pickle.dump(missing_mask, f)
     print(f"Missing mask saved for fold {fold}, repetition {repeat}, and missing ratio {missing_ratio}")
 
-    
     X_val_imputed_final, X_test_imputed_final = initial_knn_imputed_data_for_aes(X_train_scaled_final, X_val_with_missing, X_test_with_missing, fold, masking_dir, missing_ratio, repeat, config)
     with open(val_imputed_file, 'wb') as f:
         pickle.dump(X_val_imputed_final, f)
@@ -169,7 +169,8 @@ def load_or_compute_data_part(input_df, imputers, missing_ratios, config, maskin
     else:
         # for real data, using custom fold generator
         print("Using real data: Applying fold_generator_3_independent_indices")
-        fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='survey', n_splits=5))
+        # fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='survey', n_splits=5))
+        fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='unconditional', n_splits=5))
 
     # iterating over all folds and missing ratios to compute or load data
     for fold, (train_index, val_index, test_index) in enumerate(fold_gen):
@@ -381,7 +382,8 @@ def load_or_compute_data_feature_evaluation(input_df, imputers, feature_interval
         ]
     else:
         print("Using real data: Applying fold_generator_3_independent_indices")
-        fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='survey', n_splits=5))
+        # fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='survey', n_splits=5))
+        fold_gen = list(fold_generator_3_independent_indices(input_df, split_type='unconditional', n_splits=5))
 
     # iterates over all folds and feature intervals to compute or load data
     for fold, (train_index, val_index, test_index) in enumerate(fold_gen):
