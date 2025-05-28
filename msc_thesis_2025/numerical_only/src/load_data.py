@@ -23,7 +23,7 @@ def load_data(config):
     project_root = find_project_root()
     data_dir = project_root / 'data'
 
-    # storing in config for consistency
+    # Store in config for consistency
     config['input_dir'] = str(data_dir)
     
     # case 1: Synthetic data
@@ -43,7 +43,6 @@ def load_data(config):
 
     selected_option = config['process_nans']
     print(f" process_nans selected by user: {selected_option}")
-    print("Loading real DHS dataset...")
     
     # to load real data from pickle file based on file names to look for in the expected folder
     print("Loading real DHS dataset...")
@@ -89,17 +88,21 @@ def load_data(config):
     # handling missingness based on user selection
     # if user selects 'drop_all_nans' from prompt, it will handle NaN values by dropping all NaNs in the dataset
     if selected_option == 'drop_all_nans':
+        original_df = df.copy()
         df = drop_all_nans(df)
         
     # elif config['process_nans'] == 'numerical_only':
     elif selected_option == 'keep_all_numerical':
+        original_df = df.copy()
         # if 'keep_all_numerical', just dropping Egypt and returning without further processing
         return df, calculate_initial_missingness(df)
-
-    # if user selects 'numerical_only_drop_20_percentage_nans' from prompt, it will handle NaN values by dropping 20% of NaNs only 
+        
+    # if user selects 'numerical_only_drop_20_percentage_nans' from prompt, it will handle NaN values by dropping 20% of NaNs only
     elif selected_option == 'numerical_only_drop_20_percentage_nans':
+        original_df = df.copy()
         if 'Meta; GEID_init' in df.columns:
             survey_missingness = df.groupby('Meta; GEID_init').apply(lambda x: x.isna().mean().mean())
+            # only surveys with ≤ 40% missingness are kept.
             surveys_to_keep = survey_missingness[survey_missingness <= 0.2].index
             df = df[df['Meta; GEID_init'].isin(surveys_to_keep)]
 
