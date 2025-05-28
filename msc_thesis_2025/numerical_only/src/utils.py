@@ -143,6 +143,22 @@ def extract_values_using_mask(data, mask):
 
     else:
         raise TypeError("Data must be either a pandas DataFrame or numpy array.")
+
+# def extract_values_using_mask(data, mask):
+#     """
+#     Extracts values from 'data' at positions where 'mask' is True.
+#     Both data and mask must have the same shape.
+#     Returns a 1D numpy array of values.
+#     """
+#     if isinstance(data, pd.DataFrame):
+#         data = data.values
+#     elif not isinstance(data, np.ndarray):
+#         raise TypeError("Data must be either a pandas DataFrame or numpy array.")
+
+#     if data.shape != mask.shape:
+#         raise ValueError(f"Data shape: {data.shape}, Mask shape: {mask.shape}")
+
+#     return data[mask]
         
 # to load pickles
 def safe_load_pickle(file_path):
