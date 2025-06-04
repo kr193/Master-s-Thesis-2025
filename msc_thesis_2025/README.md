@@ -105,7 +105,7 @@ If using this code for research, please cite the corresponding publication.
 
 ## **Acknowledgments**
 
-Thank you for exploring this sub-project. Feedback and collaboration are warmly welcomed.
+Thank you for exploring this thesis-project. Feedback and collaboration are warmly welcomed.
 
 ---
 
